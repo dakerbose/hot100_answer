@@ -247,3 +247,18 @@ public:
       return l ? l : r;
     }
 };
+// 98. 验证二叉树
+class Solution {
+public:
+    long long pre = LLONG_MIN;
+    bool isValidBST(TreeNode* root) {
+        if (root == nullptr)
+            return true;
+        if (!isValidBST(root->left))
+            return false;
+        if (root->val <= pre)
+            return false;
+        pre = root->val;
+        return isValidBST(root->right);
+    }
+};
