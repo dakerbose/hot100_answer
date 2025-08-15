@@ -162,3 +162,142 @@ public:
         return dummy.next;
     }
 };
+// 24. 两两交换链表中的节点
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+      ListNode dummy = ListNode(0);
+      ListNode* p0 = &dummy;
+      ListNode* cur = head;
+      if(cur == nullptr) return nullptr;
+      if(cur->next == nullptr) return head;
+      while(cur && cur->next){
+        ListNode* nxt = cur->next;
+        p0->next = nxt;
+        cur->next = nxt->next;
+        nxt->next = cur;
+        p0 = cur;
+        cur = cur->next;
+      }
+      return dummy.next;
+    }
+};
+// 25. K个一组反转链表
+class Solution {
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        ListNode dummy = ListNode(0, head);
+        int n = 0;
+        ListNode *p0 = &dummy, *cur = head, *pre = nullptr;
+        for (ListNode* cur = head; cur; cur = cur->next) {
+            n++;
+        }
+        for (; n >= k; n -= k) {
+            for(int j = 0; j < k; j++){
+                ListNode* nxt = cur->next;
+                cur->next = pre;
+                pre = cur;
+                cur = nxt;
+            }
+            ListNode* nxt = p0->next;
+            p0->next->next = cur;p0->next = pre;
+            p0 = nxt;
+        }
+        return dummy.next;
+    }
+};
+// 138. 随机链表的复制
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        unordered_map<Node*, Node*> umap;
+        Node* cur = head;
+        while(cur){
+            Node* node = new Node(cur->val);
+            umap[cur] = node;
+            cur = cur->next;
+        }
+        cur = head;
+        while(cur){
+            umap[cur]->next = umap[cur->next];
+            umap[cur]->random = umap[cur->random];
+            cur = cur->next;
+        }
+        return umap[head];
+    }
+};
+// 148. 排序链表
+class Solution {
+public:
+    // 876. 链表的中间结点（快慢指针）
+    ListNode* middleNode(ListNode* head) {
+        ListNode* pre = head;
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast && fast->next) {
+            pre = slow; // 记录 slow 的前一个节点
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        pre->next = nullptr; // 断开 slow 的前一个节点和 slow 的连接
+        return slow;
+    }
+
+    // 21. 合并两个有序链表（双指针）
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode dummy; // 用哨兵节点简化代码逻辑
+        ListNode* cur = &dummy; // cur 指向新链表的末尾
+        while (list1 && list2) {
+            if (list1->val < list2->val) {
+                cur->next = list1; // 把 list1 加到新链表中
+                list1 = list1->next;
+            } else { // 注：相等的情况加哪个节点都是可以的
+                cur->next = list2; // 把 list2 加到新链表中
+                list2 = list2->next;
+            }
+            cur = cur->next;
+        }
+        cur->next = list1 ? list1 : list2; // 拼接剩余链表
+        return dummy.next;
+    }
+    ListNode* sortList(ListNode* head) {
+        if(head == nullptr || head->next == nullptr){
+            return head;
+        }
+        ListNode* head2 = middleNode(head);
+        ListNode* l = sortList(head);
+        ListNode* r = sortList(head2);
+        return mergeTwoLists(l, r);
+    }
+};
+// 23. 合并k个升序链表
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode dummy{}; // 用哨兵节点简化代码逻辑
+        auto cur = &dummy; // cur 指向新链表的末尾
+        while (list1 && list2) {
+            if (list1->val < list2->val) {
+                cur->next = list1; // 把 list1 加到新链表中
+                list1 = list1->next;
+            } else { // 注：相等的情况加哪个节点都是可以的
+                cur->next = list2; // 把 list2 加到新链表中
+                list2 = list2->next;
+            }
+            cur = cur->next;
+        }
+        cur->next = list1 ? list1 : list2; // 拼接剩余链表
+        return dummy.next;
+    }
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        int m = lists.size();
+        if(m == 0) return nullptr;
+        for(int step = 1; step < m; step *= 2){
+            for(int i = 0; i < m - step; i += step * 2){
+                lists[i] = mergeTwoLists(lists[i], lists[i + step]);
+            }
+        }
+        return lists[0];
+    }
+};
